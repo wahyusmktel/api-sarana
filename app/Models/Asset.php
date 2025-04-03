@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\URL;
 
 class Asset extends Model
 {
@@ -30,6 +31,11 @@ class Asset extends Model
         'qr_code_path',
     ];
 
+    public function getQrCodeUrlAttribute()
+    {
+        return route('api.assets.show', $this->id); // URL untuk disimpan/digenerate QR
+    }
+
     public function category()
     {
         return $this->belongsTo(AssetCategory::class);
@@ -53,5 +59,10 @@ class Asset extends Model
     public function responsible()
     {
         return $this->belongsTo(User::class, 'responsible_user_id');
+    }
+
+    public function documents()
+    {
+        return $this->hasMany(AssetDocument::class);
     }
 }
