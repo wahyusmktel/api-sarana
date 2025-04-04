@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\AssetDocumentController;
 use App\Http\Controllers\Api\AssetStatisticController;
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AssetLoanController;
+use App\Http\Controllers\Api\AssetLoanPrintController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -41,4 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('asset-loans', [AssetLoanController::class, 'store']);
     Route::put('asset-loans/{id}', [AssetLoanController::class, 'update']);
     Route::delete('asset-loans/{id}', [AssetLoanController::class, 'destroy']);
+
+    //Surat Keterangan Peminjaman Aset
+    Route::get('asset-loans/{id}/generate-document', [AssetLoanPrintController::class, 'generate']);
 });

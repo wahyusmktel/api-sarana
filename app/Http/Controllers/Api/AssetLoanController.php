@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\AssetLoan;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Models\Asset;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
+use chillerlan\QRCode\QRCode;
+use chillerlan\QRCode\QROptions;
+use Illuminate\Support\Facades\Storage;
 
 class AssetLoanController extends Controller
 {
@@ -37,6 +43,41 @@ class AssetLoanController extends Controller
             'id' => Str::uuid(),
             ...$request->all(),
         ]);
+
+        // 👉 Ambil relasi asset & user
+        $loan->load(['asset.category', 'borrower']);
+
+        // 👉 Buat nomor dokumen
+        $loan->document_number = 'DOC-' . strtoupper(Str::random(8));
+
+        // 👉 Generate QR Code tanda tangan
+        $qrContent = $loan->borrower->username . '|' . now();
+
+        $options = new QROptions([
+            'version'          => 10,
+            'outputType'       => QRCode::OUTPUT_IMAGE_PNG,
+            'eccLevel'         => QRCode::ECC_L,
+            'scale'            => 5,
+            'imageBase64'      => false,
+            'imageTransparent' => true,
+        ]);
+
+        $qr = base64_encode((new QRCode($options))->render($qrContent));
+
+        // 👉 Generate PDF
+        $pdf = Pdf::loadView('pdf.asset-loan', [
+            'loan' => $loan,
+            'qr' => $qr,
+        ]);
+
+        $filename = 'Surat_Keterangan_Peminjaman_Aset_' . strtoupper(Str::random(6)) . '.pdf';
+        $path = 'asset-loan-documents/' . $filename;
+        Storage::disk('public')->put($path, $pdf->output());
+
+        // 👉 Simpan nama file dan path ke database
+        $loan->document_name = $filename;
+        $loan->document_path = 'storage/' . $path;
+        $loan->save();
 
         return response()->json(['message' => 'Data peminjaman ditambahkan', 'data' => $loan], 201);
     }
