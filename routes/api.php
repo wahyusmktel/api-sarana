@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AssetUsageController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
@@ -45,4 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     //Surat Keterangan Peminjaman Aset
     Route::get('asset-loans/{id}/generate-document', [AssetLoanPrintController::class, 'generate']);
+
+    //Penggunaan Aset
+    Route::get('asset-usages', [AssetUsageController::class, 'index']);
+    Route::post('asset-usages', [AssetUsageController::class, 'store']);
+    Route::get('asset-usages/{id}', [AssetUsageController::class, 'show']);
+    Route::put('asset-usages/{id}', [AssetUsageController::class, 'update']);
+    Route::delete('asset-usages/{id}', [AssetUsageController::class, 'destroy']);
 });
