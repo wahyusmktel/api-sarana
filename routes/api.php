@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\AssetStatisticController;
 use App\Http\Controllers\Api\ActivityLogController;
 use App\Http\Controllers\Api\AssetLoanController;
 use App\Http\Controllers\Api\AssetLoanPrintController;
+use App\Http\Controllers\Api\AssetMaintenanceController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -53,4 +54,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('asset-usages/{id}', [AssetUsageController::class, 'show']);
     Route::put('asset-usages/{id}', [AssetUsageController::class, 'update']);
     Route::delete('asset-usages/{id}', [AssetUsageController::class, 'destroy']);
+
+    //Aset Mainteanance
+    Route::get('asset-maintenances', [AssetMaintenanceController::class, 'index']);
+    Route::post('asset-maintenances', [AssetMaintenanceController::class, 'store']);
+    Route::get('asset-maintenances/{id}', [AssetMaintenanceController::class, 'show']);
+    Route::put('asset-maintenances/{id}', [AssetMaintenanceController::class, 'update']);
+    Route::delete('asset-maintenances/{id}', [AssetMaintenanceController::class, 'destroy']);
 });
